@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreBookRequest;
+use App\Http\Requests\UpdateBookRequest;
 use App\Models\Book;
 use Illuminate\Http\Request;
 
@@ -33,14 +35,10 @@ class BookController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreBookRequest $request)
     {
-        $validate= $request->validate([
-            'title'=>'required',
-            'author'=>'required',
-            'published_year'=>'required|numeric'
-        ]);
-        $books = Book::create($request->all());
+
+        $books = Book::create($request->validated());
         return response()->json(['data'=>$books,'status' =>201]);
     }
 
@@ -77,19 +75,14 @@ class BookController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateBookRequest $request, $id)
     {
         $book = Book::find($id);
         if(!$book){
             return response()->json(['error'=>'Book not found',"status"=>401]);
         }
-        $validate = $request->validate([
-            'title'=>'required',
-            'author'=>'required',
-            'published_year'=>'required|numeric'
-        ]);
 
-        $updated = $book->update($validate);
+        $updated = $book->update($request->validated());
         return response()->json(['data'=>$updated,'status'=>201]);
     }
 
