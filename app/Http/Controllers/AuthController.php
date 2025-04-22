@@ -24,21 +24,32 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password)
         ]);
-
-        return response()->json(['message' => "User created successfully"], 201);
+        $token = $user->createToken("Token")->accessToken;
+        return response()->json(['user' => $user,"token"=>$token], 201);
     }
     public function login(Request $request)
-    {
-        $users = User::where('email', $request->input('email'))->first();
+{
+    $user = User::where('email', $request->email)->first();
 
-        if (!$users || !Hash::check($request->password, $users->password)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+    if (!$user || !Hash::check($request->password, $user->password)) {
+        return response()->json([
+            'message' => 'Tài khoản hoặc mật khẩu không đúng!'
+        ], 401);
+    }
+
+    $token = $user->createToken('MyAppToken')->accessToken;
+
+    return response()->json([
+        'token' => $token
+    ]);
+}
+    public function logout(Request $request)
+    {
+        if ($request->user()) {
+            $request->user()->token()->revoke();
+            return response()->json(['message' => 'Logged out successfully']);
         }
 
-        $token = $users->createToken('Token');
-        return response()->json([
-            'user' => $users,
-            "token" => $token->plainTextToken
-        ]);
+        return response()->json(['message' => 'No valid token provided'], 401);
     }
 }
