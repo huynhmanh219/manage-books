@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -24,13 +25,16 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password)
         ]);
+        $role = Role::where('name','user')->first();
+        $user->roles()->attach($role);
         $token = $user->createToken("Token")->accessToken;
         return response()->json(['user' => $user,"token"=>$token], 201);
     }
-    public function login(Request $request)
-{
-    $user = User::where('email', $request->email)->first();
 
+    public function login(Request $request)
+    {
+    $user = User::where('email', $request->email)->first();
+    
     if (!$user || !Hash::check($request->password, $user->password)) {
         return response()->json([
             'message' => 'Tài khoản hoặc mật khẩu không đúng!'
