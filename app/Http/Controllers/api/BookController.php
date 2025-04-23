@@ -15,9 +15,16 @@ class BookController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(['data'=>Book::all(),'status'=>201]);
+        $query = Book::query();
+        if($keyword = $request->query('search')){
+            $query->search($keyword);
+        }
+        $filters = $query->only(['genre','published_year','available']);
+        $query->filter($filters);
+        $books = $query->paginate(5);
+        return response()->json(['data'=>$books,'status'=>201]);
     }
 
     /**

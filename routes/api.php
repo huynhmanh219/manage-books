@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\api\AuthController;
+use App\Http\Controllers\api\BorrowController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\BookController;
@@ -28,6 +29,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::middleware('auth:api')->group(function () {
     Route::middleware('admin')->group(function(){
         Route::apiResource('/books', BookController::class);
+        Route::apiResource('/borrow',BorrowController::class);
     });
 
     Route::post('/logout', [AuthController::class, "logout"]);
