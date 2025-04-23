@@ -18,9 +18,14 @@ class BookSeeder extends Seeder
 
         foreach(range(1,10) as $index){
             Book::create([
-                'title' => $faker->sentence(3),  // Tạo tiêu đề sách giả
-                'author' => $faker->name,  // Tạo tên tác giả giả
-                'published_year' => $faker->year,  // Tạo năm xuất bản giả
+                'title' =>$faker->sentence(3),
+                'author' => $faker->name,
+                'published_year' => $faker->year,
+                'isbn' => $faker->isbn13,
+                'price'=>$faker->randomFloat(2,5,100),
+                'genre' => $faker->randomElement(['Fiction', 'Non-Fiction', 'Mystery', 'Sci-Fi', 'Fantasy']),
+                'quantity' => $faker->numberBetween(1, 100),
+                'description' => $faker->paragraph,
             ]);
         }
     }

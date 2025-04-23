@@ -18,6 +18,10 @@ class CreateBooksTable extends Migration
             $table->string('title');
             $table->string('author');
             $table->integer('published_year');
+            $table->string('isbn')->unique();
+            $table->string('genre')->nullable();
+            $table->integer('quantity')->default(1);
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }

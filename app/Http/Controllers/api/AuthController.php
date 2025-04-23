@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -15,7 +16,8 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:6'
+            'password' => 'required|string|min:6',
+            'role'=>'required|string'
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
@@ -23,9 +25,10 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password)
+            'password' => Hash::make($request->password),
+
         ]);
-        $role = Role::where('name','user')->first();
+        $role = Role::where('name',$request->role)->first();
         $user->roles()->attach($role);
         $token = $user->createToken("Token")->accessToken;
         return response()->json(['user' => $user,"token"=>$token], 201);
@@ -34,7 +37,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
     $user = User::where('email', $request->email)->first();
-    
+
     if (!$user || !Hash::check($request->password, $user->password)) {
         return response()->json([
             'message' => 'Tài khoản hoặc mật khẩu không đúng!'
