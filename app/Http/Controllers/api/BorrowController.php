@@ -106,4 +106,18 @@ class BorrowController extends Controller
         $borrow->delete();
         return response()->json(null,204);
     }
+
+    public function statistics(Request $request){
+        $borrowsByMonth = Borrow::selectRaw('MONTH(borrow_date) as month,COUNT(*) as total')
+                                ->groupBy('month')
+                                ->get();
+        $popularBooks = Book::withCount('borrows')
+                            ->orderBy('borrows_count','desc')
+                            ->take(5)
+                            ->get();
+        return response()->json([
+            'borrows_by_month'=>$borrowsByMonth,
+            'popular_books'=>$popularBooks
+        ]);
+    }
 }

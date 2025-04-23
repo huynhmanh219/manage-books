@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Book extends Model
 {
     use HasFactory;
-    protected $fillable= ['title','author','published_year','isbn','price','genre','quantity','description'];
+    protected $fillable= ['title','author','published_year','isbn','price','genre','quantity','description','cover_image'];
+
     public function scopeSearch($query,$keyword){
         return $query->where('title','like',"%$keyword%")
                     ->orWhere('author','like',"%$keyword%")
@@ -27,5 +28,11 @@ class Book extends Model
             $query->where('quantity',">",0);
         }
         return $query;
+    }
+    public function genres(){
+        return $this->belongsToMany(Genre::class,"book_genre");
+    }
+    public function borrows(){
+        return $this->hasMany(Borrow::class);
     }
 }

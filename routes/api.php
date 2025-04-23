@@ -26,11 +26,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::middleware('auth:api')->group(function () {
-    Route::middleware('admin')->group(function(){
-        Route::apiResource('/books', BookController::class);
-        Route::apiResource('/borrow',BorrowController::class);
-    });
+Route::middleware(['auth:api','admin'])->group(function () {
+    Route::apiResource('/books', BookController::class);
+    Route::apiResource('/borrow',BorrowController::class);
+    Route::get('statistics',[BorrowController::class,'statistics']);
 
     Route::post('/logout', [AuthController::class, "logout"]);
 });
